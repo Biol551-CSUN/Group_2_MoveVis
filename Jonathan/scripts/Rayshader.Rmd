@@ -1,0 +1,35 @@
+---
+title: "Rayshader_proj"
+author: "Jonathan Huang"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Install Libraries
+```{r}
+library(tidyverse)
+library(rayshader)
+library(here)
+library(elevatr) #elevation data
+
+```
+
+#test
+```{r}
+montereybay %>%
+  sphere_shade(zscale = 10, texture = "imhof1") %>%
+  add_shadow(ray_shade(montereybay, zscale = 50)) %>%
+  add_shadow(ambient_shade(montereybay, zscale = 50)) %>%
+  plot_3d(montereybay, zscale = 50, theta = -45, phi = 45, water = TRUE,
+          windowsize = c(1000,800), zoom = 0.75, waterlinealpha = 0.3,
+          wateralpha = 0.5, watercolor = "lightblue", waterlinecolor = "white")
+render_snapshot()
+```
+
+
+
+
