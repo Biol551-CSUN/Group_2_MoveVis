@@ -15,6 +15,7 @@ library(tidyverse)
 library(rayshader)
 library(here)
 library(elevatr) #elevation data
+library()
 
 ```
 
@@ -31,5 +32,19 @@ render_snapshot()
 ```
 
 
+# Making our own map to work we need:
 
+- image dimension match bounding box coordinate
+- image dimension of elevation & map overlay needs to be the same dimension
+
+To make our own map, we need 
+```{r}
+# define bounding box with longitude/latitude coordinates
+bbox <- list(
+  p1 = list(long = -122.522, lat = 37.707),
+  p2 = list(long = -122.354, lat = 37.84)
+)
+
+image_size <- define_image_size(bbox, major_dim = 600)
+```
 
