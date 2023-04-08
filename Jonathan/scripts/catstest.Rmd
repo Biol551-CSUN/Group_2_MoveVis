@@ -1,0 +1,169 @@
+---
+title: "Maps_lab"
+author: "Jonathan Huang"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true 
+    toc_float: true
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,  #display code?
+                      message = FALSE, #display messages?
+                      warning = FALSE, #display 
+                      fig.path = "../output/")
+```
+
+```{r}
+library(moveVis)
+library(here)
+library(tidyverse)
+
+```
+
+# TEST FROM PROVIDED CODE
+```{r}
+# data("whitestork_data")
+# view(df)
+# 
+# m <- align_move(m, # This function filters to have consistent time scale so function frames_spatial
+#                 res = 180, #change interval to every 30 min if 90; Can be "max" or "min" or "mean" for the average resolution
+#                 digit = 0, #changes time interval in seconds
+# unit = "mins")
+# view(m)
+# 
+# # df2move() #converts data.frame to move or movestack (data type needed) to add into :
+# # frames_spatial() OR frames_graph()
+# 
+# frames <- frames_spatial(m, #take move data
+#                          trace_show = TRUE,
+#                          equidistant = FALSE,
+#                          map_service = "osm",   #select map
+#                          map_type = "terrain_bg")
+# 
+# frames[[200]] #plots a single frame
+# 
+# frames <- frames %>% 
+# 
+#  add_labels(title = "White Storks (Ciconia ciconia) Migration 2018",
+# 
+#  caption = "Trajectory data: Cheng et al. (2019); 
+# 
+#  Fiedler et al. (2013-2019),https://doi.org/10.5441/001/1.ck04mn78
+# 
+#  Map: OpenStreetMap/Stamen; Projection: Geographic, WGS84",
+# 
+#  x = "Longitude", y = "Latitude") %>%
+# 
+#  add_timestamps(type = "label") %>% #can be "label" or "text"
+# 
+#  add_progress(colour = "white") %>%
+# 
+#  add_northarrow(colour = "white", position = "bottomleft") %>% 
+# 
+#  add_scalebar(colour = "black", position = "bottomright", distance = 600)
+# 
+# frames[[200]] #plots a single frame
+# 
+# animate_frames(frames = frames, out_file = here("Jonathan","output","stork.gif"))
+```
+
+
+
+# Use cat data
+```{r}
+library(tidytuesdayR)
+library(lubridate)
+
+#load data
+tuesdata <- tidytuesdayR::tt_load(2023, week = 5)
+cats_uk <- as.data.frame(tuesdata$cats_uk)
+  # mutate( timestamp = ymd_hms(timestamp)) %>% 
+  # filter(tag_id %in% c("Athena","Ares", "Lola"))
+cats_uk_reference <- tuesdata$cats_uk_reference
+#use cats_uk
+glimpse(cats_uk)
+
+
+#clean (from tidyr)
+library(tidyverse)
+library(here)
+library(janitor)
+
+cats_uk <- read_csv("https://www.datarepository.movebank.org/bitstream/handle/10255/move.883/Pet%20Cats%20United%20Kingdom.csv?sequence=3") |> 
+  clean_names() |> 
+  # Standardize things and reorder columns.
+  select(
+    tag_id = tag_local_identifier,
+    event_id:location_lat,
+    ground_speed,
+    height_above_ellipsoid,
+    algorithm_marked_outlier,
+    manually_marked_outlier,
+    study_name
+  ) |> 
+  # Explicitly encode FALSE in the outlier columns.
+  tidyr::replace_na(
+    list(
+      algorithm_marked_outlier = FALSE,
+      manually_marked_outlier = FALSE
+    )
+  ) |>
+  #filter to have subset of data
+  filter(
+    tag_id %in% c("Athena","Ares","Lola")
+  )
+
+
+glimpse(cats_uk)
+glimpse(cats_uk_reference)
+
+```
+
+## Test movevis
+```{r}
+# cats_uk %>% filter(tag_id %in% c("Athena","Ares", "Lola"))
+# data need: tag_id - identifier
+#          : x & y (i.e. Lat/long)
+#          : time - make regular interval via 
+
+#make df to move or movestack data
+
+cats_uk <- cats_uk[!duplicated(cats_uk$timestamp),] #remove duplicate time stamp
+test <- df2move(cats_uk,  #df
+        proj = "+init=epsg:4326 +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0",  #type of projection
+        x = "location_long",  #what are your x coord
+        y = "location_lat",
+        time = "timestamp", #what are the time, needs to be POSIXct
+        track_id = "tag_id"
+)
+
+
+# align move to have same interval
+
+m <- align_move(test, res = "mean", unit = "secs")
+glimpse(m)
+
+
+#make the frames to have frame_spatial-spatio_temporal ready plot
+get_maptypes()
+make_frames <- frames_spatial(m,
+                          trace_show = TRUE, #show trace of complete path
+                         equidistant = FALSE, # make map squared? FALSE= prevent stretching of map
+                         map_service = "osm",   #select map type use ?get_maptypes
+                         map_type = "mtb")
+
+frames_aes <- make_frames %>% 
+  add_timestamps(type = "label") %>%  #show the timestamps
+  add_progress(colour = "white") %>% #add a progress bar
+  add_northarrow(colour = "white", position = "bottomleft") %>% 
+  add_scalebar(colour = "black", position = "bottomright", distance = 600)
+
+#check a single frame
+make_frames[[100]]
+
+animate_frames(frames = frames_aes, out_file = here("Jonathan","output","cattest3.gif"))
+```
+
