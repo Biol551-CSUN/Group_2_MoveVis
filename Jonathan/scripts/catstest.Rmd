@@ -79,21 +79,21 @@ library(lubridate)
 
 #load data
 tuesdata <- tidytuesdayR::tt_load(2023, week = 5)
-cats_uk <- as.data.frame(tuesdata$cats_uk)
-  # mutate( timestamp = ymd_hms(timestamp)) %>% 
-  # filter(tag_id %in% c("Athena","Ares", "Lola"))
+cats_uk <- as.data.frame(tuesdata$cats_uk) %>% 
+  mutate( timestamp = ymd_hms(timestamp)) 
+  filter(tag_id %in% c("Athena","Ares", "Lola"))
 cats_uk_reference <- tuesdata$cats_uk_reference
 #use cats_uk
 glimpse(cats_uk)
 
 
-#clean (from tidyr)
+# clean (from tidyr)
 library(tidyverse)
 library(here)
 library(janitor)
 
-cats_uk <- read_csv("https://www.datarepository.movebank.org/bitstream/handle/10255/move.883/Pet%20Cats%20United%20Kingdom.csv?sequence=3") |> 
-  clean_names() |> 
+cats_uk <- read_csv("https://www.datarepository.movebank.org/bitstream/handle/10255/move.883/Pet%20Cats%20United%20Kingdom.csv?sequence=3") |>
+  clean_names() |>
   # Standardize things and reorder columns.
   select(
     tag_id = tag_local_identifier,
@@ -103,18 +103,18 @@ cats_uk <- read_csv("https://www.datarepository.movebank.org/bitstream/handle/10
     algorithm_marked_outlier,
     manually_marked_outlier,
     study_name
-  ) |> 
+  ) |>
   # Explicitly encode FALSE in the outlier columns.
   tidyr::replace_na(
     list(
       algorithm_marked_outlier = FALSE,
       manually_marked_outlier = FALSE
     )
-  ) |>
+  ) 
   #filter to have subset of data
-  filter(
-    tag_id %in% c("Athena","Ares","Lola")
-  )
+  # filter(
+  #   tag_id %in% c("Athena","Ares","Lola")
+  
 
 
 glimpse(cats_uk)
@@ -131,7 +131,7 @@ glimpse(cats_uk_reference)
 
 #make df to move or movestack data
 
-cats_uk <- cats_uk[!duplicated(cats_uk$timestamp),] #remove duplicate time stamp
+cats_uk <- cats_uk[!duplicated(cats_uk$timestamp),] #remove row with duplicate time stamp
 test <- df2move(cats_uk,  #df
         proj = "+init=epsg:4326 +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0",  #type of projection
         x = "location_long",  #what are your x coord
@@ -143,7 +143,8 @@ test <- df2move(cats_uk,  #df
 
 # align move to have same interval
 
-m <- align_move(test, res = "mean", unit = "secs")
+m <- align_move(test, res = "mean", #Max, min
+                unit = "secs")
 glimpse(m)
 
 
@@ -155,15 +156,20 @@ make_frames <- frames_spatial(m,
                          map_service = "osm",   #select map type use ?get_maptypes
                          map_type = "mtb")
 
+frames_graph()
+
 frames_aes <- make_frames %>% 
   add_timestamps(type = "label") %>%  #show the timestamps
   add_progress(colour = "white") %>% #add a progress bar
   add_northarrow(colour = "white", position = "bottomleft") %>% 
   add_scalebar(colour = "black", position = "bottomright", distance = 600)
 
+add_gg()
+
 #check a single frame
 make_frames[[100]]
 
-animate_frames(frames = frames_aes, out_file = here("Jonathan","output","cattest3.gif"))
+animate_frames(frames = frames_aes,
+               out_file = here("Jonathan","output","cattest.gif"), overwrite = TRUE)
 ```
 
