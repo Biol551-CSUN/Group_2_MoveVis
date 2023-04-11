@@ -39,24 +39,45 @@ knitr::opts_chunk$set(echo = TRUE,  #display code?
 ### 2. Application of moveVis
 
 -   Many of us in Biology programs conduct research consisting of track data for marine life such as sharks, dolphins and fish.
+
+
 -   Migration of cattle, bears, birds, snakes, lizards and endangered species.
+
+
 -   Population data i.e. human migration movement data across continents over time
--   useful tool for visually exploring and interpreting movement patterns, including potential interactions of individuals with each other and their environment\
+
+
+-   useful tool for visually exploring and interpreting movement patterns, including potential interactions of individuals with each other and their environment
+
+
 -   Climate data, tornados, storms, rain & wind, tracking major weather events
+
+
 -   Historical data, migration, climate, environmental
+
+
 -   Stock data
+
+
 -   Can be used to track sports races/events such as bike races, cars, marathons etc
+
+
 -   Time resolution could be 500 years for human migration or 5 seconds for bike race data
+
 
 ### 3. The 4 computational steps
 
 -   To produce a ggplot or video output containing animated movement data, 4 main functions must be carried out
 
+
 - (a) preparing data, (b) creating frames, (c) adapting frames and (d) animating frames
+
 
 -   Each of which have sub functions within their category to further optimize the output features of the visual.
 
+
 -   There are additional features that function by manipulating and changing the data such as those in the tidyverse package
+
 
 
 ```{r out.width="100%", echo= FALSE}
