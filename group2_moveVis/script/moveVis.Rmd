@@ -43,7 +43,9 @@ knitr::opts_chunk$set(echo = TRUE,  #display code?
 
 -   Population data i.e. human migration movement data across continents over time
 
--   useful tool for visually exploring and interpreting movement patterns, including potential interactions of individuals with each other and their environment
+-   Visually explore and interpreting movement patterns
+
+-  Potential interactions of individuals with each other and their environment
 
 -   Climate data, tornados, storms, rain & wind, tracking major weather events
 
