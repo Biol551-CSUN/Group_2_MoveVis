@@ -1,6 +1,6 @@
 ---
 title: "moveVis group 2"
-author: "Roshan"
+author: "Roshan, Jonathan, Mackenzie, Kenta"
 date: "2023-04-11"
 output: 
   html_document:
@@ -21,73 +21,56 @@ knitr::opts_chunk$set(echo = TRUE,  #display code?
 
 -   MoveViz is a package that consists of a set of tools used for visualizing movement data into animated trajectories
 
+-   Movement trajectories used for ggplots
 
 -   Spatial data containing x and y geolocation points for plots and maps is integrated with time stamp data (temporal data) forming spatio-temporal data
 
+-   Move, raster class inputs or movestack data added to baselayer map for ggplot frames
 
 -   MoveVis functions to animate movement trajectories using different time intervals
-
 
 -   Frames rendered into animations encoded as GIF or video file,
 
 
--   Movement trajectories can be used in ggplot and various plots containing geolocations.
 
 
--   Raster image containing geolocations added to baselayer map
 
 ### 2. Application of moveVis
 
 -   Many of us in Biology programs conduct research consisting of track data for marine life such as sharks, dolphins and fish.
 
-
 -   Migration of cattle, bears, birds, snakes, lizards and endangered species.
-
 
 -   Population data i.e. human migration movement data across continents over time
 
-
 -   useful tool for visually exploring and interpreting movement patterns, including potential interactions of individuals with each other and their environment
-
 
 -   Climate data, tornados, storms, rain & wind, tracking major weather events
 
-
 -   Historical data, migration, climate, environmental
-
 
 -   Stock data
 
-
 -   Can be used to track sports races/events such as bike races, cars, marathons etc
 
-
 -   Time resolution could be 500 years for human migration or 5 seconds for bike race data
-
 
 ### 3. The 4 computational steps
 
 -   To produce a ggplot or video output containing animated movement data, 4 main functions must be carried out
 
-
-- (a) preparing data, (b) creating frames, (c) adapting frames and (d) animating frames
-
+-   (a) preparing data, (b) creating frames, (c) adapting frames and (d) animating frames
 
 -   Each of which have sub functions within their category to further optimize the output features of the visual.
 
-
 -   There are additional features that function by manipulating and changing the data such as those in the tidyverse package
-
-
 
 ```{r out.width="100%", echo= FALSE}
 knitr::include_graphics(here::here("group2_moveVis","data","moveVis.png"))
 
 ```
 
-
-----------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------------
 
 # Loading our Libraries
 
@@ -176,4 +159,3 @@ m <- align_move(cat,
 
 glimpse(m)
 ```
-
