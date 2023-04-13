@@ -161,3 +161,129 @@ m <- align_move(cat,
 
 glimpse(m)
 ```
+
+## ----------------------------------------------------------------------------------------------
+
+# Analyze Data
+
+```{r}
+library(move)
+```
+
+You can use get_maptypes() get a list of all available map_services and map_types
+
+```{r}
+get_maptypes()
+```
+
+# Creating spatial frames
+
+```{r}
+frames <- frames_spatial(
+  m = m, # input data
+  trace_show = TRUE, # show trace of complete path
+  equidistant = FALSE, # make map square (FALSE = prevent stretching of map)
+  map_service = "osm", # select map service
+  map_type = "streets", # select map type
+  alpha = 0.75, # select transparency level for map
+  path_colours = c("#D55E00", "#009E73", "#56B4E9"), # select colors for paths
+  ext = extent(-5.12, -5.065, 50.14, 50.175), # define a custom extent for map
+  map_res = 0.8, # select map resolution
+  )
+```
+
+You can use length() to check the number of frames
+
+```{r}
+length(frames)
+```
+
+You can use frames[[]] to view a single frame at a time
+
+```{r}
+frames[[100]]
+```
+# Adapting spatial frames
+
+You can use add_labels() to add labels to frames
+
+```{r}
+frames <- add_labels(frames, x = "Longitude", y = "Latitude") # add axis labels
+
+frames[[100]]
+```
+
+You can use add_timestamps() to show timestamps on frames
+
+```{r}
+frames <- add_timestamps(frames, type = "label")
+
+frames[[100]]
+```
+
+You can use add_progress() to add a progress bar to frames
+
+```{r}
+frames <- add_progress(frames, colour = "red")
+
+frames[[100]]
+```
+
+You can use add_northarrow() to add a north arrow to frames
+
+```{r}
+frames <- add_northarrow(frames, colour = "black", height = 0.08, position = "bottomleft")
+
+frames[[100]]
+```
+
+You can use add_scalebar() to add a scalebar to frames
+
+```{r}
+frames <- add_scalebar(frames, colour = "black", position = "bottomright", height = 0.022, label_margin = 1.4, distance = 1)
+
+frames[[100]]
+```
+
+You can include additional visual features in frames
+
+```{r}
+# Make data.frame() with coordinates for vertices of a polygon
+data <- data.frame(x = c(-5.11, -5.10, -5.10, -5.11, -5.11),
+                   y = c(50.160, 50.160, 50.165, 50.165, 50.160))
+
+# You can customize individual frames with geom_path()
+modified_frame <- frames[[100]] + geom_path(aes(x = x, y = y), data = data, colour = "red", linetype = "dashed")
+
+modified_frame
+```
+
+You can use add_gg() to customize all of the frames at once
+
+```{r}
+frames <- add_gg(frames, gg = expr(geom_path(aes(x = x, y = y), data = data, color = "red", linetype = "dashed")), data = data)
+
+frames[[100]]
+```
+
+You can also use add_gg() to add dynamic/animated features to frames
+
+```{r}
+# create data.frame containing coordinates for polygon vertices
+data <- data.frame(x = c(-5.08, -5.09, -5.09, -5.08, -5.08),
+                   y = c(50.150, 50.150, 50.155, 50.155, 50.150))
+
+# make a list from the data.frame by replicating it by the length of frames
+data <- rep(list(data), length.out = length(frames))
+
+# alter the coordinates to make them shift
+data <- lapply(data, function(x){
+  y <- rnorm(nrow(x)-1, mean = 0.00001, sd = 0.0001) 
+  x + c(y, y[1])
+})
+
+# draw each individual polygon to each frame
+frames <- add_gg(frames, gg = expr(geom_path(aes(x = x, y = y), data = data, colour = "black")), data = data)
+
+frames[[100]]
+```
