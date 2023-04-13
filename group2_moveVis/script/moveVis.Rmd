@@ -290,7 +290,7 @@ frames[[100]]
 
 ## ----------------------------------------------------------------------------------------------
 
-#Animating frames
+# Animating frames
 ```{r}
 
 # animate_frames(frames, out_file = here("group2_moveVis","output", "yaymovevis.gif"), overwrite = TRUE)
