@@ -12,7 +12,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE,  #display code?
                       message = FALSE, #display messages?
                       warning = FALSE, #display 
-                      fig.path = "../output/")
+                      fig.path = "group2_moveVis/output/")
 ```
 
 # Introduction into moveVis
@@ -72,7 +72,6 @@ knitr::include_graphics(here::here("group2_moveVis","data","moveVis.png"))
 
 ```
 
-## ----------------------------------------------------------------------------------------------
 
 # Loading our Libraries
 
@@ -89,6 +88,25 @@ To Download moveVis : **install.packages("moveVis")**
 # install.packages("moveVis")
 library(moveVis) 
 ```
+
+# Helpful functions to help animate
+
+
+You can use frames[[]] to view a single frame at a time
+```{r}
+# frames[[]]
+```
+
+
+tail() and head() return n last or first frames of a moveVis frames object 
+```{r}
+# tail()
+# head()
+```
+
+
+## ----------------------------------------------------------------------------------------------
+
 
 # Loading our Sample data
 
@@ -116,14 +134,14 @@ glimpse(cats_uk)
 
 ### Cleaning the data
 
--   Needs to be a times data
+-   Needs to be a times stamp 
 
 -   Cannot have duplicated time stamp
 
 ```{r}
 cats_uk <- cats_uk%>% 
   mutate( timestamp = ymd_hms(timestamp)) %>%
-  filter(tag_id %in% c("Athena","Ares", "Lola")) #simplify dataset to managable practice set
+  filter(tag_id %in% c("Athena","Ares")) #simplify dataset to managable practice set
 ```
 
 If there is duplicated timestamp, needs to be removed
@@ -141,10 +159,10 @@ Our required compnents of the data will be specified here
 ```{r}
 cat <- df2move(cats_uk,  #df
         proj = "+init=epsg:4326 +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0",  #type of projection
-        x = "location_long",  #what are your x coord
-        y = "location_lat",
+        x = "location_long",#what are your x coordinates
+        y = "location_lat", #what are your y coordinates
         time = "timestamp", #what are the time, needs to be POSIXct
-        track_id = "tag_id"
+        track_id = "tag_id" #Unique identifier 
 )
 
 glimpse(cat)
@@ -162,19 +180,6 @@ m <- align_move(cat,
 glimpse(m)
 ```
 
-## ----------------------------------------------------------------------------------------------
-
-# Analyze Data
-
-```{r}
-library(move)
-```
-
-You can use get_maptypes() get a list of all available map_services and map_types
-
-```{r}
-get_maptypes()
-```
 
 # Creating spatial frames
 
@@ -184,25 +189,20 @@ frames <- frames_spatial(
   trace_show = TRUE, # show trace of complete path
   equidistant = FALSE, # make map square (FALSE = prevent stretching of map)
   map_service = "osm", # select map service
-  map_type = "streets", # select map type
-  alpha = 0.75, # select transparency level for map
-  path_colours = c("#D55E00", "#009E73", "#56B4E9"), # select colors for paths
-  ext = extent(-5.12, -5.065, 50.14, 50.175), # define a custom extent for map
-  map_res = 0.8, # select map resolution
+  map_type = "streets" # select map type
+  # alpha = 0.75, # select transparency level for map
+  # path_colours = c("#D55E00", "#009E73") # select colors for paths
   )
 ```
 
-You can use length() to check the number of frames
+You can use get_maptypes() get a list of all available map_services and map_types
 
 ```{r}
-length(frames)
+get_maptypes()
 ```
 
-You can use frames[[]] to view a single frame at a time
+## ----------------------------------------------------------------------------------------------
 
-```{r}
-frames[[100]]
-```
 # Adapting spatial frames
 
 You can use add_labels() to add labels to frames
@@ -288,57 +288,36 @@ frames <- add_gg(frames, gg = expr(geom_path(aes(x = x, y = y), data = data, col
 frames[[100]]
 ```
 
+## ----------------------------------------------------------------------------------------------
+
+#Animating frames
 ```{r}
-# animate frames
-library(moveVis)
-library(move)
 
-data("move_data", package = "moveVis") # move class object
-# if your tracks are present as data.frames, see df2move() for conversion
-
-# align move_data to a uniform time scale
-m <- align_move(move_data, res = 4, unit = "mins")
-
-# create spatial frames with a OpenStreetMap watercolour map
-frames <- frames_spatial(m, path_colours = c("red", "green", "blue"),
-                         map_service = "osm", map_type = "watercolor", alpha = 0.5) %>% 
-  add_labels(x = "Longitude", y = "Latitude") %>% # add some customizations, such as axis labels
-  add_northarrow() %>% 
-  add_scalebar() %>% 
-  add_timestamps(type = "label") %>% 
-  add_progress()
-
-frames[[100]] # preview one of the frames, e.g. the 100th frame
-
-# Before you can animate these frames, we can move the out_file to the animate frames using the function 
-
-suggest_formats(
-  suggested = c("gif", "mov", "mp4", "flv", "avi", "mpeg", "3gp", "ogg")
-
-# animate frames
-animate_frames(frames, out_file = "yaymovevis", overwrite = TRUE)
+# animate_frames(frames, out_file = here("group2_moveVis","output", "yaymovevis.gif"), overwrite = TRUE)
 
 # if you overwrite + TRUE then it lets us see the animation again and again multiple times without crashing
 
-# method for the movievis
 
-# [[ renders an individual frame.
+```
 
-frames[[100]]
 
-# tail() and head() return n last or first frames of a moveVis frames object 
-
-tail(frames)
-head(frames)
-
+```{r}
 # If we want to see the basic information about the number of frames, extent and etc. then print ()
 
-animate_frames(frames)%>%
+frames[[100]]%>%
   print()
 
 # if we want to see the animation in reverse order by any chance we can use the rev()
 
-animate_frames(frames)%>%
+frames[[100]]%>%
   rev()
+```
+
+
+This function returns a selection of suggested file formats that can be used with out_file of animate_frames on your system.
+```{r}
+suggest_formats(
+  suggested = c("gif", "mov", "mp4", "flv", "avi", "mpeg", "3gp", "ogg")
+)
 ```
 
