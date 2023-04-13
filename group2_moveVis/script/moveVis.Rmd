@@ -310,6 +310,11 @@ frames <- frames_spatial(m, path_colours = c("red", "green", "blue"),
 
 frames[[100]] # preview one of the frames, e.g. the 100th frame
 
+# Before you can animate these frames, we can move the out_file to the animate frames using the function 
+
+suggest_formats(
+  suggested = c("gif", "mov", "mp4", "flv", "avi", "mpeg", "3gp", "ogg")
+
 # animate frames
 animate_frames(frames, out_file = "yaymovevis", overwrite = TRUE)
 
@@ -328,12 +333,12 @@ head(frames)
 
 # If we want to see the basic information about the number of frames, extent and etc. then print ()
 
-animate_frames(frames, out_file = "yaymovevis", overwrite = TRUE)%>%
+animate_frames(frames)%>%
   print()
 
 # if we want to see the animation in reverse order by any chance we can use the rev()
 
-animate_frames(frames, out_file = "yaymovevis", overwrite = TRUE)%>%
+animate_frames(frames)%>%
   rev()
 ```
 
